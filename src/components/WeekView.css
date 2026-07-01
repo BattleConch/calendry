@@ -169,19 +169,19 @@
   position: absolute;
   left: 2px;
   right: 2px;
-  border-radius: 4px;
-  padding: 2px 6px;
+  border-radius: 8px;
+  padding: 4px 8px;
   color: #fff;
   font-size: 11px;
   overflow: hidden;
   cursor: pointer;
   z-index: 1;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.15);
-  transition: filter 0.15s;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.18);
+  transition: filter 0.15s, transform 0.15s, box-shadow 0.15s;
 }
-.week-event:hover { filter: brightness(0.9); }
-.week-event-title { font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.week-event-time { font-size: 10px; opacity: 0.9; }
+.week-event:hover { filter: brightness(0.92); transform: translateY(-1px) scaleX(1.01); box-shadow: 0 4px 12px rgba(0,0,0,0.22); }
+.week-event-title { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.week-event-time { font-size: 10px; opacity: 0.85; margin-top: 1px; }
 
 /* Timed tasks in week view */
 .week-task-timed {

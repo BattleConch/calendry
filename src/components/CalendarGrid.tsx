@@ -11,9 +11,10 @@ interface Props {
   onSelectDate: (date: string | null) => void;
   onToday: () => void;
   onQuickCreate: (date: string) => void;
+  onEventClick: (event: CalendarEvent) => void;
 }
 
-export default function CalendarGrid({ currentDate, events, tasks, tags, selectedDate, onSelectDate, onToday, onQuickCreate }: Props) {
+export default function CalendarGrid({ currentDate, events, tasks, tags, selectedDate, onSelectDate, onToday, onQuickCreate, onEventClick }: Props) {
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
   const firstDay = new Date(year, month, 1).getDay();
@@ -71,7 +72,7 @@ export default function CalendarGrid({ currentDate, events, tasks, tags, selecte
                     className="event-chip"
                     style={{ background: event.color }}
                     title={`${event.title} ${event.startTime}–${event.endTime}`}
-                    onClick={e => e.stopPropagation()}
+                    onClick={e => { e.stopPropagation(); onEventClick(event); }}
                   >
                     <span className="event-chip-time">{event.startTime}</span>
                     <span className="event-chip-title">{event.title}</span>

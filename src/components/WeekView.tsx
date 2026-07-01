@@ -23,9 +23,10 @@ interface Props {
   onSelectDate: (date: string | null) => void;
   onToday: () => void;
   onQuickCreate: (date: string, startTime: string, endTime: string) => void;
+  onEventClick: (event: CalendarEvent) => void;
 }
 
-export default function WeekView({ currentDate, events, tasks, tags, selectedDate, onSelectDate, onToday, onQuickCreate }: Props) {
+export default function WeekView({ currentDate, events, tasks, tags, selectedDate, onSelectDate, onToday, onQuickCreate, onEventClick }: Props) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [drag, setDrag] = useState<DragState | null>(null);
   const today = new Date().toISOString().slice(0, 10);
@@ -206,6 +207,7 @@ export default function WeekView({ currentDate, events, tasks, tags, selectedDat
                       className="week-event"
                       style={{ top, height, background: event.color }}
                       title={`${event.title}\n${event.startTime}–${event.endTime}`}
+                      onClick={e => { e.stopPropagation(); onEventClick(event); }}
                     >
                       {tag && <span className="week-event-tag">{tag.name}</span>}
                       <div className="week-event-title">{event.title}</div>

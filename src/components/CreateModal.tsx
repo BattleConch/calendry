@@ -10,6 +10,7 @@ export interface CreateConfig {
   date?: string;
   startTime?: string;
   endTime?: string;
+  editEvent?: CalendarEvent;
 }
 
 interface Props {
@@ -17,12 +18,13 @@ interface Props {
   tags: Tag[];
   onCreateTag: (tag: Tag) => void;
   onAddEvent: (e: CalendarEvent) => void;
+  onUpdateEvent?: (e: CalendarEvent) => void;
   onAddTask: (t: Task) => void;
   onAddNote: (n: Note) => void;
   onClose: () => void;
 }
 
-export default function CreateModal({ config, tags, onCreateTag, onAddEvent, onAddTask, onAddNote, onClose }: Props) {
+export default function CreateModal({ config, tags, onCreateTag, onAddEvent, onUpdateEvent, onAddTask, onAddNote, onClose }: Props) {
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal" onClick={e => e.stopPropagation()}>
@@ -31,7 +33,7 @@ export default function CreateModal({ config, tags, onCreateTag, onAddEvent, onA
             prefill={config}
             tags={tags}
             onCreateTag={onCreateTag}
-            onSubmit={e => { onAddEvent(e); onClose(); }}
+            onSubmit={e => { config.editEvent && onUpdateEvent ? onUpdateEvent(e) : onAddEvent(e); onClose(); }}
             onClose={onClose}
           />
         )}
@@ -65,14 +67,16 @@ function EventForm({ prefill, tags, onCreateTag, onSubmit, onClose }: {
   onSubmit: (e: CalendarEvent) => void;
   onClose: () => void;
 }) {
+  const isEditing = !!prefill.editEvent;
+  const ev = prefill.editEvent;
   const today = new Date().toISOString().slice(0, 10);
-  const [title, setTitle] = useState('');
-  const [date, setDate] = useState(prefill.date ?? today);
-  const [startTime, setStartTime] = useState(prefill.startTime ?? '09:00');
-  const [endTime, setEndTime] = useState(prefill.endTime ?? '10:00');
-  const [color, setColor] = useState(EVENT_COLORS[0]);
-  const [tagId, setTagId] = useState<string | undefined>(undefined);
-  const [description, setDescription] = useState('');
+  const [title, setTitle] = useState(ev?.title ?? '');
+  const [date, setDate] = useState(ev?.date ?? prefill.date ?? today);
+  const [startTime, setStartTime] = useState(ev?.startTime ?? prefill.startTime ?? '09:00');
+  const [endTime, setEndTime] = useState(ev?.endTime ?? prefill.endTime ?? '10:00');
+  const [color, setColor] = useState(ev?.color ?? EVENT_COLORS[0]);
+  const [tagId, setTagId] = useState<string | undefined>(ev?.tagId);
+  const [description, setDescription] = useState(ev?.description ?? '');
   const [error, setError] = useState('');
 
   const handleTagSelect = (id: string | undefined) => {
@@ -87,13 +91,13 @@ function EventForm({ prefill, tags, onCreateTag, onSubmit, onClose }: {
     e.preventDefault();
     if (!title.trim()) { setError('Title is required'); return; }
     if (endTime <= startTime) { setError('End time must be after start time'); return; }
-    onSubmit({ id: crypto.randomUUID(), title: title.trim(), date, startTime, endTime, color, tagId, description: description.trim() || undefined });
+    onSubmit({ id: ev?.id ?? crypto.randomUUID(), title: title.trim(), date, startTime, endTime, color, tagId, description: description.trim() || undefined });
   };
 
   return (
     <form className="cm-form" onSubmit={handleSubmit}>
       <div className="cm-header">
-        <div className="cm-type-badge event-badge">Event</div>
+        <div className="cm-type-badge event-badge">{isEditing ? 'Edit Event' : 'Event'}</div>
         <button type="button" className="cm-close" onClick={onClose}>&#10005;</button>
       </div>
       {error && <div className="cm-error">{error}</div>}
@@ -116,7 +120,7 @@ function EventForm({ prefill, tags, onCreateTag, onSubmit, onClose }: {
       </div>
       <div className="cm-actions">
         <button type="button" className="cm-cancel" onClick={onClose}>Cancel</button>
-        <button type="submit" className="cm-save">Save event</button>
+        <button type="submit" className="cm-save">{isEditing ? 'Update event' : 'Save event'}</button>
       </div>
     </form>
   );

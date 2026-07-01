@@ -30,7 +30,8 @@ function App() {
   const [dotsOpen, setDotsOpen] = useState(false);
   const [creating, setCreating] = useState<CreateConfig | null>(null);
 
-  const addEvent  = (e: CalendarEvent) => setEvents(prev => [...prev, e]);
+  const addEvent    = (e: CalendarEvent) => setEvents(prev => [...prev, e]);
+  const updateEvent = (e: CalendarEvent) => setEvents(prev => prev.map(ev => ev.id === e.id ? e : ev));
   const deleteEvent = (id: string)    => setEvents(prev => prev.filter(e => e.id !== id));
   const addTask   = (t: Task)         => setTasks(prev => [...prev, t]);
   const toggleTask = (id: string)     => setTasks(prev => prev.map(t => t.id === id ? { ...t, completed: !t.completed } : t));
@@ -128,6 +129,7 @@ function App() {
                 onSelectDate={setSelectedDate}
                 onToday={goToday}
                 onQuickCreate={(date) => setCreating({ type: 'event', date })}
+                onEventClick={(ev) => setCreating({ type: 'event', editEvent: ev })}
               />
             ) : (
               <WeekView
@@ -139,6 +141,7 @@ function App() {
                 onSelectDate={setSelectedDate}
                 onToday={goToday}
                 onQuickCreate={(date, startTime, endTime) => setCreating({ type: 'event', date, startTime, endTime })}
+                onEventClick={(ev) => setCreating({ type: 'event', editEvent: ev })}
               />
             )
           ) : page === 'tasks' ? (
@@ -175,6 +178,7 @@ function App() {
           tags={tags}
           onCreateTag={addTag}
           onAddEvent={addEvent}
+          onUpdateEvent={updateEvent}
           onAddTask={addTask}
           onAddNote={addNote}
           onClose={() => setCreating(null)}
