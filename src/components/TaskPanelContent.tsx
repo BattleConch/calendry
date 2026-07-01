@@ -1,15 +1,18 @@
 import React, { useState } from 'react';
-import { Task } from '../types';
+import { Task, Tag } from '../types';
+import TagPicker from './TagPicker';
 import './TaskPanelContent.css';
 
 interface Props {
   tasks: Task[];
+  tags: Tag[];
   onAddTask: (task: Task) => void;
   onToggleTask: (id: string) => void;
   onDeleteTask: (id: string) => void;
+  onCreateTag: (tag: Tag) => void;
 }
 
-export default function TaskPanelContent({ tasks, onAddTask, onToggleTask, onDeleteTask }: Props) {
+export default function TaskPanelContent({ tasks, tags, onAddTask, onToggleTask, onDeleteTask, onCreateTag }: Props) {
   const [showForm, setShowForm] = useState(false);
   const [filter, setFilter] = useState<'all' | 'pending' | 'completed'>('all');
 
@@ -56,6 +59,8 @@ export default function TaskPanelContent({ tasks, onAddTask, onToggleTask, onDel
 
       {showForm && (
         <TaskForm
+          tags={tags}
+          onCreateTag={onCreateTag}
           onSubmit={t => { onAddTask(t); setShowForm(false); }}
           onCancel={() => setShowForm(false)}
         />
@@ -104,11 +109,12 @@ function TaskItem({ task, today, onToggle, onDelete }: { task: Task; today: stri
   );
 }
 
-function TaskForm({ onSubmit, onCancel }: { onSubmit: (t: Task) => void; onCancel: () => void }) {
+function TaskForm({ tags, onCreateTag, onSubmit, onCancel }: { tags: Tag[]; onCreateTag: (t: Tag) => void; onSubmit: (t: Task) => void; onCancel: () => void }) {
   const [title, setTitle] = useState('');
   const [date, setDate] = useState('');
   const [time, setTime] = useState('');
   const [description, setDescription] = useState('');
+  const [tagId, setTagId] = useState<string | undefined>();
   const [error, setError] = useState('');
 
   return (
@@ -117,7 +123,7 @@ function TaskForm({ onSubmit, onCancel }: { onSubmit: (t: Task) => void; onCance
       onSubmit={e => {
         e.preventDefault();
         if (!title.trim()) { setError('Title is required'); return; }
-        onSubmit({ id: crypto.randomUUID(), title: title.trim(), date: date || undefined, time: time || undefined, completed: false, description: description.trim() || undefined });
+        onSubmit({ id: crypto.randomUUID(), title: title.trim(), date: date || undefined, time: time || undefined, completed: false, description: description.trim() || undefined, tagId });
       }}
     >
       {error && <div className="task-form-error">{error}</div>}
@@ -129,6 +135,7 @@ function TaskForm({ onSubmit, onCancel }: { onSubmit: (t: Task) => void; onCance
       </div>
       <textarea className="task-input task-textarea" placeholder="Description (optional)" value={description}
         onChange={e => setDescription(e.target.value)} rows={2} />
+      <TagPicker tags={tags} selectedTagId={tagId} onSelect={setTagId} onCreateTag={onCreateTag} />
       <div className="task-form-actions">
         <button type="button" className="task-form-cancel" onClick={onCancel}>Cancel</button>
         <button type="submit" className="task-form-save">Save</button>

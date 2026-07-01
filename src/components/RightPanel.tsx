@@ -1,5 +1,5 @@
 import React from 'react';
-import { Task, Note } from '../types';
+import { Task, Note, Tag } from '../types';
 import TaskPanelContent from './TaskPanelContent';
 import NotesPanelContent from './NotesPanelContent';
 import './RightPanel.css';
@@ -9,6 +9,7 @@ interface Props {
   activeTab: 'tasks' | 'notes';
   tasks: Task[];
   notes: Note[];
+  tags: Tag[];
   onTabChange: (tab: 'tasks' | 'notes') => void;
   onToggle: () => void;
   onAddTask: (t: Task) => void;
@@ -17,9 +18,11 @@ interface Props {
   onAddNote: (n: Note) => void;
   onUpdateNote: (id: string, content: string) => void;
   onDeleteNote: (id: string) => void;
+  onCreateTag: (tag: Tag) => void;
 }
 
 export default function RightPanel(props: Props) {
+  const { tags, onCreateTag } = props;
   const { open, activeTab, onTabChange, onToggle } = props;
 
   return (
@@ -57,16 +60,20 @@ export default function RightPanel(props: Props) {
             {activeTab === 'tasks' ? (
               <TaskPanelContent
                 tasks={props.tasks}
+                tags={tags}
                 onAddTask={props.onAddTask}
                 onToggleTask={props.onToggleTask}
                 onDeleteTask={props.onDeleteTask}
+                onCreateTag={onCreateTag}
               />
             ) : (
               <NotesPanelContent
                 notes={props.notes}
+                tags={tags}
                 onAddNote={props.onAddNote}
                 onUpdateNote={props.onUpdateNote}
                 onDeleteNote={props.onDeleteNote}
+                onCreateTag={onCreateTag}
               />
             )}
           </div>

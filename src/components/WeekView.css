@@ -203,3 +203,50 @@
 }
 .week-task-timed:hover { background: #d2e3fc; }
 .week-task-timed.completed { text-decoration: line-through; color: #80868b; background: #f1f3f4; }
+
+/* Tag label on events */
+.week-event-tag { font-size: 10px; opacity: 0.85; font-weight: 600; letter-spacing: 0.3px; }
+
+/* Today corner button */
+.week-corner {
+  width: 56px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 2px;
+}
+.corner-today-btn {
+  background: none;
+  border: 1px solid #dadce0;
+  border-radius: 8px;
+  padding: 3px 6px;
+  font-size: 10px;
+  color: #3c4043;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s, border-color 0.15s;
+  white-space: nowrap;
+}
+.corner-today-btn:hover { background: #f1f3f4; border-color: #bdc1c6; }
+
+/* Drag ghost */
+.drag-ghost {
+  position: absolute;
+  left: 2px;
+  right: 2px;
+  background: rgba(26, 115, 232, 0.18);
+  border: 2px solid #1a73e8;
+  border-radius: 4px;
+  z-index: 10;
+  pointer-events: none;
+  display: flex;
+  align-items: flex-start;
+  padding: 2px 6px;
+}
+.drag-ghost-time {
+  font-size: 11px;
+  color: #1a73e8;
+  font-weight: 600;
+  white-space: nowrap;
+}

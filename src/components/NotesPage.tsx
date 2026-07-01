@@ -1,15 +1,18 @@
 import React, { useState } from 'react';
-import { Note } from '../types';
+import { Note, Tag } from '../types';
+import TagPicker from './TagPicker';
 import './NotesPage.css';
 
 interface Props {
   notes: Note[];
+  tags: Tag[];
   onAddNote: (n: Note) => void;
   onUpdateNote: (id: string, content: string) => void;
   onDeleteNote: (id: string) => void;
+  onCreateTag: (tag: Tag) => void;
 }
 
-export default function NotesPage({ notes, onAddNote, onUpdateNote, onDeleteNote }: Props) {
+export default function NotesPage({ notes, tags, onAddNote, onUpdateNote, onDeleteNote, onCreateTag }: Props) {
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [search, setSearch] = useState('');
@@ -39,6 +42,8 @@ export default function NotesPage({ notes, onAddNote, onUpdateNote, onDeleteNote
         <div className="modal-overlay" onClick={() => setShowForm(false)}>
           <div className="modal" onClick={e => e.stopPropagation()}>
             <NoteFormModal
+              tags={tags}
+              onCreateTag={onCreateTag}
               onSubmit={n => { onAddNote(n); setShowForm(false); }}
               onCancel={() => setShowForm(false)}
             />
@@ -101,9 +106,10 @@ function NoteCard({ note, editing, onEdit, onSave, onCancel, onDelete }: {
   );
 }
 
-function NoteFormModal({ onSubmit, onCancel }: { onSubmit: (n: Note) => void; onCancel: () => void }) {
+function NoteFormModal({ tags, onCreateTag, onSubmit, onCancel }: { tags: Tag[]; onCreateTag: (t: Tag) => void; onSubmit: (n: Note) => void; onCancel: () => void }) {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
+  const [tagId, setTagId] = useState<string | undefined>();
   const [error, setError] = useState('');
 
   return (
@@ -111,7 +117,7 @@ function NoteFormModal({ onSubmit, onCancel }: { onSubmit: (n: Note) => void; on
       e.preventDefault();
       if (!title.trim()) { setError('Title is required'); return; }
       const now = new Date().toISOString();
-      onSubmit({ id: crypto.randomUUID(), title: title.trim(), content: content.trim(), createdAt: now, updatedAt: now });
+      onSubmit({ id: crypto.randomUUID(), title: title.trim(), content: content.trim(), tagId, createdAt: now, updatedAt: now });
     }}>
       <div className="modal-header">
         <h3>New Note</h3>
@@ -120,6 +126,7 @@ function NoteFormModal({ onSubmit, onCancel }: { onSubmit: (n: Note) => void; on
       {error && <div className="modal-error">{error}</div>}
       <label className="modal-label">Title<input className="modal-input" type="text" value={title} onChange={e => { setTitle(e.target.value); setError(''); }} autoFocus placeholder="Note title" /></label>
       <label className="modal-label">Content<textarea className="modal-input modal-textarea" value={content} onChange={e => setContent(e.target.value)} placeholder="Write your note..." rows={6} /></label>
+      <TagPicker tags={tags} selectedTagId={tagId} onSelect={setTagId} onCreateTag={onCreateTag} />
       <div className="modal-actions">
         <button type="button" className="modal-btn-cancel" onClick={onCancel}>Cancel</button>
         <button type="submit" className="modal-btn-save">Save note</button>

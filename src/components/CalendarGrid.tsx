@@ -1,16 +1,19 @@
 import React from 'react';
-import { CalendarEvent, Task } from '../types';
+import { CalendarEvent, Tag, Task } from '../types';
 import './CalendarGrid.css';
 
 interface Props {
   currentDate: Date;
   events: CalendarEvent[];
   tasks: Task[];
+  tags: Tag[];
   selectedDate: string | null;
   onSelectDate: (date: string | null) => void;
+  onToday: () => void;
+  onQuickCreate: (date: string) => void;
 }
 
-export default function CalendarGrid({ currentDate, events, tasks, selectedDate, onSelectDate }: Props) {
+export default function CalendarGrid({ currentDate, events, tasks, tags, selectedDate, onSelectDate, onToday, onQuickCreate }: Props) {
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
   const firstDay = new Date(year, month, 1).getDay();
@@ -34,6 +37,9 @@ export default function CalendarGrid({ currentDate, events, tasks, selectedDate,
   return (
     <div className="calendar-grid">
       <div className="day-names">
+        <div className="day-name corner-cell">
+          <button className="corner-today-btn" onClick={onToday}>Today</button>
+        </div>
         {['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'].map(d => (
           <div key={d} className="day-name">{d}</div>
         ))}

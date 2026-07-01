@@ -1,15 +1,18 @@
 import React, { useState } from 'react';
-import { Task } from '../types';
+import { Task, Tag } from '../types';
+import TagPicker from './TagPicker';
 import './TasksPage.css';
 
 interface Props {
   tasks: Task[];
+  tags: Tag[];
   onAddTask: (t: Task) => void;
   onToggleTask: (id: string) => void;
   onDeleteTask: (id: string) => void;
+  onCreateTag: (tag: Tag) => void;
 }
 
-export default function TasksPage({ tasks, onAddTask, onToggleTask, onDeleteTask }: Props) {
+export default function TasksPage({ tasks, tags, onAddTask, onToggleTask, onDeleteTask, onCreateTag }: Props) {
   const [showForm, setShowForm] = useState(false);
   const [filter, setFilter] = useState<'all' | 'pending' | 'completed'>('all');
   const today = new Date().toISOString().slice(0, 10);
@@ -43,6 +46,8 @@ export default function TasksPage({ tasks, onAddTask, onToggleTask, onDeleteTask
         <div className="modal-overlay" onClick={() => setShowForm(false)}>
           <div className="modal" onClick={e => e.stopPropagation()}>
             <TaskFormModal
+              tags={tags}
+              onCreateTag={onCreateTag}
               onSubmit={t => { onAddTask(t); setShowForm(false); }}
               onCancel={() => setShowForm(false)}
             />
@@ -86,18 +91,19 @@ export default function TasksPage({ tasks, onAddTask, onToggleTask, onDeleteTask
   );
 }
 
-function TaskFormModal({ onSubmit, onCancel }: { onSubmit: (t: Task) => void; onCancel: () => void }) {
+function TaskFormModal({ tags, onCreateTag, onSubmit, onCancel }: { tags: Tag[]; onCreateTag: (t: Tag) => void; onSubmit: (t: Task) => void; onCancel: () => void }) {
   const [title, setTitle] = useState('');
   const [date, setDate] = useState('');
   const [time, setTime] = useState('');
   const [description, setDescription] = useState('');
+  const [tagId, setTagId] = useState<string | undefined>();
   const [error, setError] = useState('');
 
   return (
     <form className="task-modal-form" onSubmit={e => {
       e.preventDefault();
       if (!title.trim()) { setError('Title is required'); return; }
-      onSubmit({ id: crypto.randomUUID(), title: title.trim(), date: date || undefined, time: time || undefined, completed: false, description: description.trim() || undefined });
+      onSubmit({ id: crypto.randomUUID(), title: title.trim(), date: date || undefined, time: time || undefined, completed: false, description: description.trim() || undefined, tagId });
     }}>
       <div className="modal-header">
         <h3>New Task</h3>
@@ -110,6 +116,7 @@ function TaskFormModal({ onSubmit, onCancel }: { onSubmit: (t: Task) => void; on
         <label className="modal-label">Time<input className="modal-input" type="time" value={time} onChange={e => setTime(e.target.value)} disabled={!date} /></label>
       </div>
       <label className="modal-label">Description<textarea className="modal-input modal-textarea" value={description} onChange={e => setDescription(e.target.value)} placeholder="Optional" rows={3} /></label>
+      <TagPicker tags={tags} selectedTagId={tagId} onSelect={setTagId} onCreateTag={onCreateTag} />
       <div className="modal-actions">
         <button type="button" className="modal-btn-cancel" onClick={onCancel}>Cancel</button>
         <button type="submit" className="modal-btn-save">Save task</button>

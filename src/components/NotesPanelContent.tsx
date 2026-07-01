@@ -1,15 +1,18 @@
 import React, { useState } from 'react';
-import { Note } from '../types';
+import { Note, Tag } from '../types';
+import TagPicker from './TagPicker';
 import './NotesPanelContent.css';
 
 interface Props {
   notes: Note[];
+  tags: Tag[];
   onAddNote: (n: Note) => void;
   onUpdateNote: (id: string, content: string) => void;
   onDeleteNote: (id: string) => void;
+  onCreateTag: (tag: Tag) => void;
 }
 
-export default function NotesPanelContent({ notes, onAddNote, onUpdateNote, onDeleteNote }: Props) {
+export default function NotesPanelContent({ notes, tags, onAddNote, onUpdateNote, onDeleteNote, onCreateTag }: Props) {
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
 
@@ -25,6 +28,8 @@ export default function NotesPanelContent({ notes, onAddNote, onUpdateNote, onDe
 
       {showForm && (
         <NoteForm
+          tags={tags}
+          onCreateTag={onCreateTag}
           onSubmit={n => { onAddNote(n); setShowForm(false); }}
           onCancel={() => setShowForm(false)}
         />
@@ -50,9 +55,10 @@ export default function NotesPanelContent({ notes, onAddNote, onUpdateNote, onDe
   );
 }
 
-function NoteForm({ onSubmit, onCancel }: { onSubmit: (n: Note) => void; onCancel: () => void }) {
+function NoteForm({ tags, onCreateTag, onSubmit, onCancel }: { tags: Tag[]; onCreateTag: (t: Tag) => void; onSubmit: (n: Note) => void; onCancel: () => void }) {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
+  const [tagId, setTagId] = useState<string | undefined>();
   const [error, setError] = useState('');
 
   return (
@@ -62,7 +68,7 @@ function NoteForm({ onSubmit, onCancel }: { onSubmit: (n: Note) => void; onCance
         e.preventDefault();
         if (!title.trim()) { setError('Title is required'); return; }
         const now = new Date().toISOString();
-        onSubmit({ id: crypto.randomUUID(), title: title.trim(), content: content.trim(), createdAt: now, updatedAt: now });
+        onSubmit({ id: crypto.randomUUID(), title: title.trim(), content: content.trim(), tagId, createdAt: now, updatedAt: now });
       }}
     >
       {error && <div className="note-form-error">{error}</div>}
@@ -70,6 +76,7 @@ function NoteForm({ onSubmit, onCancel }: { onSubmit: (n: Note) => void; onCance
         onChange={e => { setTitle(e.target.value); setError(''); }} autoFocus />
       <textarea className="note-input note-textarea" placeholder="Write your note..." value={content}
         onChange={e => setContent(e.target.value)} rows={4} />
+      <TagPicker tags={tags} selectedTagId={tagId} onSelect={setTagId} onCreateTag={onCreateTag} />
       <div className="note-form-actions">
         <button type="button" className="note-cancel" onClick={onCancel}>Cancel</button>
         <button type="submit" className="note-save">Save</button>
