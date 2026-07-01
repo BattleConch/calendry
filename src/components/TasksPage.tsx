@@ -14,7 +14,8 @@ interface Props {
 
 export default function TasksPage({ tasks, tags, onAddTask, onToggleTask, onDeleteTask, onCreateTag }: Props) {
   const [showForm, setShowForm] = useState(false);
-  const [filter, setFilter] = useState<'all' | 'pending' | 'completed'>('all');
+  const [filter, setFilter] = useState<'all' | 'pending' | 'completed'>('pending');
+  const [groupBy, setGroupBy] = useState<'none' | 'tag'>('tag');
   const today = new Date().toISOString().slice(0, 10);
 
   const filtered = tasks.filter(t => {
@@ -28,18 +29,45 @@ export default function TasksPage({ tasks, tags, onAddTask, onToggleTask, onDele
 
   const pending = tasks.filter(t => !t.completed).length;
 
+  // Group tasks by tag
+  const grouped: { label: string; color?: string; tasks: Task[] }[] = [];
+  if (groupBy === 'tag') {
+    const byTag: Record<string, Task[]> = {};
+    for (const t of filtered) {
+      const key = t.tagId ?? '__none__';
+      (byTag[key] ??= []).push(t);
+    }
+    for (const tag of tags) {
+      if (byTag[tag.id]?.length) {
+        grouped.push({ label: tag.name, color: tag.color, tasks: byTag[tag.id] });
+      }
+    }
+    if (byTag['__none__']?.length) {
+      grouped.push({ label: 'No tag', tasks: byTag['__none__'] });
+    }
+  } else {
+    grouped.push({ label: '', tasks: filtered });
+  }
+
   return (
     <div className="tasks-page">
       <div className="tasks-page-header">
-        <h2 className="tasks-page-title">Tasks <span className="tasks-count">{pending} pending</span></h2>
-        <div className="tasks-page-filters">
-          {(['all', 'pending', 'completed'] as const).map(f => (
-            <button key={f} className={`filter-pill ${filter === f ? 'active' : ''}`} onClick={() => setFilter(f)}>
-              {f.charAt(0).toUpperCase() + f.slice(1)}
-            </button>
-          ))}
-        </div>
         <button className="tasks-add-btn" onClick={() => setShowForm(true)}>+ Add task</button>
+        <h2 className="tasks-page-title">Tasks <span className="tasks-count">{pending} pending</span></h2>
+        <div className="tasks-header-right">
+          <div className="tasks-page-filters">
+            {(['pending', 'completed', 'all'] as const).map(f => (
+              <button key={f} className={`filter-pill ${filter === f ? 'active' : ''}`} onClick={() => setFilter(f)}>
+                {f.charAt(0).toUpperCase() + f.slice(1)}
+              </button>
+            ))}
+          </div>
+          <div className="group-toggle">
+            <span className="group-label">Group by:</span>
+            <button className={`group-btn ${groupBy === 'tag' ? 'active' : ''}`} onClick={() => setGroupBy('tag')}>Tag</button>
+            <button className={`group-btn ${groupBy === 'none' ? 'active' : ''}`} onClick={() => setGroupBy('none')}>None</button>
+          </div>
+        </div>
       </div>
 
       {showForm && (
@@ -55,37 +83,56 @@ export default function TasksPage({ tasks, tags, onAddTask, onToggleTask, onDele
         </div>
       )}
 
-      <div className="tasks-grid">
+      <div className="tasks-body">
         {filtered.length === 0 && (
           <div className="tasks-empty">
             <div className="tasks-empty-icon">&#10003;</div>
             <p>No {filter !== 'all' ? filter : ''} tasks</p>
           </div>
         )}
-        {filtered.map(task => {
-          const isOverdue = !task.completed && task.date && task.date < today;
-          return (
-            <div key={task.id} className={`task-card ${task.completed ? 'completed' : ''} ${isOverdue ? 'overdue' : ''}`}>
-              <button className={`task-check ${task.completed ? 'checked' : ''}`} onClick={() => onToggleTask(task.id)}>
-                {task.completed && <span>&#10003;</span>}
-              </button>
-              <div className="task-card-body">
-                <div className="task-card-title">{task.title}</div>
-                {(task.date || task.description) && (
-                  <div className="task-card-meta">
-                    {task.date && (
-                      <span className={`task-card-date ${isOverdue ? 'overdue-text' : ''}`}>
-                        {isOverdue ? '⚠ ' : ''}{formatDate(task.date)}{task.time ? ` · ${task.time}` : ''}
-                      </span>
-                    )}
-                    {task.description && <span className="task-card-desc">{task.description}</span>}
-                  </div>
-                )}
+
+        {grouped.map((group, gi) => (
+          <div key={gi} className="task-section">
+            {groupBy === 'tag' && group.label && (
+              <div className="task-section-header">
+                {group.color && <span className="section-dot" style={{ background: group.color }} />}
+                <span className="section-name">{group.label}</span>
+                <span className="section-count">{group.tasks.length}</span>
               </div>
-              <button className="task-card-delete" onClick={() => onDeleteTask(task.id)}>&#10005;</button>
+            )}
+            <div className="task-section-list">
+              {group.tasks.map(task => {
+                const isOverdue = !task.completed && task.date && task.date < today;
+                const tag = tags.find(tg => tg.id === task.tagId);
+                return (
+                  <div key={task.id} className={`task-card ${task.completed ? 'completed' : ''} ${isOverdue ? 'overdue' : ''}`}>
+                    <button className={`task-check ${task.completed ? 'checked' : ''}`} onClick={() => onToggleTask(task.id)}
+                      style={tag ? { borderColor: tag.color } : undefined}>
+                      {task.completed && <span>&#10003;</span>}
+                    </button>
+                    <div className="task-card-body">
+                      <div className="task-card-title">{task.title}</div>
+                      {(task.date || task.description) && (
+                        <div className="task-card-meta">
+                          {task.date && (
+                            <span className={`task-card-date ${isOverdue ? 'overdue-text' : ''}`}>
+                              {isOverdue ? '⚠ ' : ''}{formatDate(task.date)}{task.time ? ` · ${task.time}` : ''}
+                            </span>
+                          )}
+                          {task.description && <span className="task-card-desc">{task.description}</span>}
+                        </div>
+                      )}
+                    </div>
+                    {tag && groupBy !== 'tag' && (
+                      <span className="task-tag-pill" style={{ background: tag.color + '22', color: tag.color }}>{tag.name}</span>
+                    )}
+                    <button className="task-card-delete" onClick={() => onDeleteTask(task.id)}>&#10005;</button>
+                  </div>
+                );
+              })}
             </div>
-          );
-        })}
+          </div>
+        ))}
       </div>
     </div>
   );

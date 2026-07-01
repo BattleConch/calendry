@@ -34,5 +34,5 @@ export interface Tag {
   color: string;
 }
 
-export type ViewMode = 'month' | 'week';
+export type ViewMode = 'month' | 'week' | 'day';
 export type PageTab = 'calendar' | 'tasks' | 'notes';

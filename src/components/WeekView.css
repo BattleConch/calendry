@@ -3,13 +3,13 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  background: #fff;
+  background: var(--surface);
 }
 
 /* Header */
 .week-header {
   display: flex;
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 1px solid var(--border);
   flex-shrink: 0;
 }
 .time-gutter-header {
@@ -23,24 +23,24 @@
   align-items: center;
   padding: 8px 4px;
   cursor: pointer;
-  border-left: 1px solid #e0e0e0;
+  border-left: 1px solid var(--border);
   transition: background 0.1s;
   user-select: none;
 }
-.week-day-header:hover { background: #f8f9fa; }
-.week-day-header.selected { background: #e8f0fe; }
+.week-day-header:hover { background: var(--surface-2); }
+.week-day-header.selected { background: var(--accent-light); }
 .week-day-name {
   font-size: 11px;
-  color: #70757a;
+  color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.5px;
   font-weight: 500;
 }
-.week-day-header.today .week-day-name { color: #1a73e8; }
+.week-day-header.today .week-day-name { color: var(--accent); }
 .week-day-number {
   font-size: 22px;
   font-weight: 400;
-  color: #3c4043;
+  color: var(--text-dark);
   margin-top: 2px;
   width: 40px;
   height: 40px;
@@ -50,7 +50,7 @@
   border-radius: 50%;
 }
 .week-day-number.today-circle {
-  background: #1a73e8;
+  background: var(--accent);
   color: #fff;
   font-weight: 500;
 }
@@ -58,7 +58,7 @@
 /* All-day row */
 .week-allday-row {
   display: flex;
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 1px solid var(--border);
   min-height: 28px;
   flex-shrink: 0;
 }
@@ -66,7 +66,7 @@
   width: 56px;
   flex-shrink: 0;
   font-size: 10px;
-  color: #70757a;
+  color: var(--text-muted);
   display: flex;
   align-items: center;
   justify-content: flex-end;
@@ -75,7 +75,7 @@
 }
 .week-allday-cell {
   flex: 1;
-  border-left: 1px solid #e0e0e0;
+  border-left: 1px solid var(--border);
   padding: 3px 2px;
   display: flex;
   flex-direction: column;
@@ -83,8 +83,8 @@
 }
 .week-task-chip {
   font-size: 11px;
-  color: #1a73e8;
-  background: #e8f0fe;
+  color: var(--accent);
+  background: var(--accent-light);
   border-radius: 3px;
   padding: 1px 5px;
   display: flex;
@@ -94,8 +94,8 @@
   overflow: hidden;
   cursor: pointer;
 }
-.week-task-chip:hover { background: #d2e3fc; }
-.week-task-chip.completed { text-decoration: line-through; color: #80868b; background: #f1f3f4; }
+.week-task-chip:hover { background: #ddd4c8; }
+.week-task-chip.completed { text-decoration: line-through; color: #80868b; background: var(--surface-hover); }
 .week-task-icon { font-size: 10px; flex-shrink: 0; }
 
 /* Scrollable grid */
@@ -120,7 +120,7 @@
   position: absolute;
   right: 8px;
   font-size: 10px;
-  color: #70757a;
+  color: var(--text-muted);
   transform: translateY(-50%);
   white-space: nowrap;
   pointer-events: none;
@@ -132,16 +132,16 @@
 /* Day columns */
 .week-col {
   flex: 1;
-  border-left: 1px solid #e0e0e0;
+  border-left: 1px solid var(--border);
   position: relative;
 }
-.week-col.today-col { background: #fafbff; }
+.week-col.today-col { background: rgba(139,110,71,0.03); }
 
 .hour-line {
   position: absolute;
   left: 0;
   right: 0;
-  border-top: 1px solid #f1f3f4;
+  border-top: 1px solid var(--border-light);
   pointer-events: none;
 }
 
@@ -150,7 +150,7 @@
   position: absolute;
   left: 0;
   right: 0;
-  border-top: 2px solid #ea4335;
+  border-top: 2px solid var(--danger);
   pointer-events: none;
   z-index: 2;
 }
@@ -161,7 +161,7 @@
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #ea4335;
+  background: var(--danger);
 }
 
 /* Events in week view */
@@ -191,8 +191,8 @@
   border-radius: 3px;
   padding: 2px 5px;
   font-size: 11px;
-  color: #1a73e8;
-  background: #e8f0fe;
+  color: var(--accent);
+  background: var(--accent-light);
   display: flex;
   align-items: center;
   gap: 3px;
@@ -201,8 +201,8 @@
   cursor: pointer;
   z-index: 1;
 }
-.week-task-timed:hover { background: #d2e3fc; }
-.week-task-timed.completed { text-decoration: line-through; color: #80868b; background: #f1f3f4; }
+.week-task-timed:hover { background: #ddd4c8; }
+.week-task-timed.completed { text-decoration: line-through; color: #80868b; background: var(--surface-hover); }
 
 /* Tag label on events */
 .week-event-tag { font-size: 10px; opacity: 0.85; font-weight: 600; letter-spacing: 0.3px; }
@@ -222,21 +222,21 @@
   border-radius: 8px;
   padding: 3px 6px;
   font-size: 10px;
-  color: #3c4043;
+  color: var(--text-dark);
   cursor: pointer;
   font-family: inherit;
   transition: background 0.15s, border-color 0.15s;
   white-space: nowrap;
 }
-.corner-today-btn:hover { background: #f1f3f4; border-color: #bdc1c6; }
+.corner-today-btn:hover { background: var(--surface-hover); border-color: #bdc1c6; }
 
 /* Drag ghost */
 .drag-ghost {
   position: absolute;
   left: 2px;
   right: 2px;
-  background: rgba(26, 115, 232, 0.18);
-  border: 2px solid #1a73e8;
+  background: rgba(139,110,71,0.15);
+  border: 2px solid var(--accent);
   border-radius: 4px;
   z-index: 10;
   pointer-events: none;
@@ -246,7 +246,7 @@
 }
 .drag-ghost-time {
   font-size: 11px;
-  color: #1a73e8;
+  color: var(--accent);
   font-weight: 600;
   white-space: nowrap;
 }

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import Sidebar from './components/Sidebar';
 import CalendarGrid from './components/CalendarGrid';
 import WeekView from './components/WeekView';
+import DayView from './components/DayView';
 import RightPanel from './components/RightPanel';
 import TasksPage from './components/TasksPage';
 import NotesPage from './components/NotesPage';
@@ -10,10 +11,10 @@ import { CalendarEvent, Task, Note, Tag, ViewMode, PageTab } from './types';
 import './App.css';
 
 const DEFAULT_TAGS: Tag[] = [
-  { id: 'personal',  name: 'Personal',  color: '#4285F4' },
-  { id: 'work',      name: 'Work',      color: '#34A853' },
-  { id: 'school',    name: 'School',    color: '#EA4335' },
-  { id: 'health',    name: 'Health',    color: '#FBBC04' },
+  { id: 'personal',  name: 'Personal',  color: '#8B6F47' },
+  { id: 'work',      name: 'Work',      color: '#6B8F5E' },
+  { id: 'school',    name: 'School',    color: '#B56A4A' },
+  { id: 'health',    name: 'Health',    color: '#D4A854' },
 ];
 
 function App() {
@@ -32,30 +33,34 @@ function App() {
 
   const addEvent    = (e: CalendarEvent) => setEvents(prev => [...prev, e]);
   const updateEvent = (e: CalendarEvent) => setEvents(prev => prev.map(ev => ev.id === e.id ? e : ev));
-  const deleteEvent = (id: string)    => setEvents(prev => prev.filter(e => e.id !== id));
-  const addTask   = (t: Task)         => setTasks(prev => [...prev, t]);
-  const toggleTask = (id: string)     => setTasks(prev => prev.map(t => t.id === id ? { ...t, completed: !t.completed } : t));
-  const deleteTask = (id: string)     => setTasks(prev => prev.filter(t => t.id !== id));
-  const addNote   = (n: Note)         => setNotes(prev => [...prev, n]);
-  const updateNote = (id: string, content: string) =>
+  const deleteEvent = (id: string)       => setEvents(prev => prev.filter(e => e.id !== id));
+  const addTask     = (t: Task)          => setTasks(prev => [...prev, t]);
+  const toggleTask  = (id: string)       => setTasks(prev => prev.map(t => t.id === id ? { ...t, completed: !t.completed } : t));
+  const deleteTask  = (id: string)       => setTasks(prev => prev.filter(t => t.id !== id));
+  const addNote     = (n: Note)          => setNotes(prev => [...prev, n]);
+  const updateNote  = (id: string, content: string) =>
     setNotes(prev => prev.map(n => n.id === id ? { ...n, content, updatedAt: new Date().toISOString() } : n));
-  const deleteNote = (id: string)     => setNotes(prev => prev.filter(n => n.id !== id));
-  const addTag    = (tag: Tag)        => setTags(prev => [...prev, tag]);
+  const deleteNote  = (id: string)       => setNotes(prev => prev.filter(n => n.id !== id));
+  const addTag      = (tag: Tag)         => setTags(prev => [...prev, tag]);
 
   const goToday = () => setCurrentDate(new Date());
 
   const navPrev = () => {
     if (view === 'month') setCurrentDate(d => new Date(d.getFullYear(), d.getMonth() - 1, 1));
-    else setCurrentDate(d => { const n = new Date(d); n.setDate(n.getDate() - 7); return n; });
+    else if (view === 'week') setCurrentDate(d => { const n = new Date(d); n.setDate(n.getDate() - 7); return n; });
+    else setCurrentDate(d => { const n = new Date(d); n.setDate(n.getDate() - 1); return n; });
   };
   const navNext = () => {
     if (view === 'month') setCurrentDate(d => new Date(d.getFullYear(), d.getMonth() + 1, 1));
-    else setCurrentDate(d => { const n = new Date(d); n.setDate(n.getDate() + 7); return n; });
+    else if (view === 'week') setCurrentDate(d => { const n = new Date(d); n.setDate(n.getDate() + 7); return n; });
+    else setCurrentDate(d => { const n = new Date(d); n.setDate(n.getDate() + 1); return n; });
   };
 
   const headerLabel = view === 'month'
     ? currentDate.toLocaleString('default', { month: 'long', year: 'numeric' })
-    : getWeekLabel(currentDate);
+    : view === 'week'
+      ? getWeekLabel(currentDate)
+      : currentDate.toLocaleString('default', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
 
   return (
     <div className="app">
@@ -81,9 +86,18 @@ function App() {
 
         <div className="header-right">
           {page === 'calendar' && (
-            <div className="view-toggle">
-              <button className={`view-btn ${view === 'month' ? 'active' : ''}`} onClick={() => setView('month')}>Month</button>
-              <button className={`view-btn ${view === 'week'  ? 'active' : ''}`} onClick={() => setView('week')}>Week</button>
+            <div className="view-dropdown-wrapper">
+              <select
+                className="view-select"
+                value={view}
+                onChange={e => setView(e.target.value as ViewMode)}
+                aria-label="Calendar view"
+              >
+                <option value="month">Month</option>
+                <option value="week">Week</option>
+                <option value="day">Day</option>
+              </select>
+              <span className="view-select-arrow">&#8964;</span>
             </div>
           )}
           <div className="dots-wrapper">
@@ -131,7 +145,7 @@ function App() {
                 onQuickCreate={(date) => setCreating({ type: 'event', date })}
                 onEventClick={(ev) => setCreating({ type: 'event', editEvent: ev })}
               />
-            ) : (
+            ) : view === 'week' ? (
               <WeekView
                 currentDate={currentDate}
                 events={events}
@@ -143,11 +157,21 @@ function App() {
                 onQuickCreate={(date, startTime, endTime) => setCreating({ type: 'event', date, startTime, endTime })}
                 onEventClick={(ev) => setCreating({ type: 'event', editEvent: ev })}
               />
+            ) : (
+              <DayView
+                currentDate={currentDate}
+                events={events}
+                tasks={tasks}
+                tags={tags}
+                onToday={goToday}
+                onQuickCreate={(date, startTime, endTime) => setCreating({ type: 'event', date, startTime, endTime })}
+                onEventClick={(ev) => setCreating({ type: 'event', editEvent: ev })}
+              />
             )
           ) : page === 'tasks' ? (
             <TasksPage tasks={tasks} tags={tags} onAddTask={addTask} onToggleTask={toggleTask} onDeleteTask={deleteTask} onCreateTag={addTag} />
           ) : (
-            <NotesPage notes={notes} tags={tags} onAddNote={addNote} onUpdateNote={updateNote} onDeleteNote={deleteNote} onCreateTag={addTag}  />
+            <NotesPage notes={notes} tags={tags} onAddNote={addNote} onUpdateNote={updateNote} onDeleteNote={deleteNote} onCreateTag={addTag} />
           )}
         </main>
 
@@ -168,7 +192,6 @@ function App() {
             onDeleteNote={deleteNote}
             onCreateTag={addTag}
           />
-
         )}
       </div>
 

@@ -19,7 +19,7 @@
   backdrop-filter: blur(2px);
 }
 .modal {
-  background: #fff;
+  background: var(--surface);
   border-radius: 20px;
   box-shadow: 0 12px 48px rgba(0,0,0,0.2), 0 4px 16px rgba(0,0,0,0.1);
   width: 480px;
@@ -50,7 +50,7 @@
   text-transform: uppercase;
   letter-spacing: 0.8px;
 }
-.event-badge { background: #e8f0fe; color: #1a73e8; }
+.event-badge { background: #e8f0fe; color: var(--accent); }
 .task-badge  { background: #e6f4ea; color: #1e8e3e; }
 .note-badge  { background: #fef7e0; color: #e37400; }
 
@@ -58,7 +58,7 @@
   background: none;
   border: none;
   font-size: 16px;
-  color: #5f6368;
+  color: var(--text-muted);
   cursor: pointer;
   width: 32px;
   height: 32px;
@@ -68,7 +68,7 @@
   justify-content: center;
   transition: background 0.15s, color 0.15s;
 }
-.cm-close:hover { background: #f1f3f4; color: #202124; }
+.cm-close:hover { background: var(--surface-2); color: var(--text-dark); }
 
 .cm-error {
   background: #fce8e6;
@@ -76,23 +76,23 @@
   padding: 8px 12px;
   border-radius: 10px;
   font-size: 13px;
-  border-left: 3px solid #ea4335;
+  border-left: 3px solid var(--danger);
 }
 
 .cm-title-input {
   border: none;
-  border-bottom: 2px solid #dadce0;
+  border-bottom: 2px solid var(--border);
   padding: 8px 2px;
   font-size: 22px;
   font-weight: 400;
-  color: #202124;
+  color: var(--text-dark);
   outline: none;
   font-family: inherit;
   width: 100%;
   transition: border-color 0.15s;
   background: transparent;
 }
-.cm-title-input:focus { border-bottom-color: #1a73e8; }
+.cm-title-input:focus { border-bottom-color: var(--accent); }
 .cm-title-input::placeholder { color: #adb5bd; }
 
 .cm-row {
@@ -106,25 +106,25 @@
   flex-direction: column;
   gap: 4px;
   font-size: 12px;
-  color: #5f6368;
+  color: var(--text-muted);
   font-weight: 500;
 }
-.cm-label-text { font-size: 12px; color: #5f6368; font-weight: 500; }
+.cm-label-text { font-size: 12px; color: var(--text-muted); font-weight: 500; }
 
 .cm-input {
-  border: 1.5px solid #dadce0;
+  border: 1.5px solid var(--border);
   border-radius: 10px;
   padding: 8px 11px;
   font-size: 13px;
-  color: #202124;
+  color: var(--text-dark);
   outline: none;
   font-family: inherit;
   width: 100%;
   background: #fafafa;
   transition: border 0.15s, box-shadow 0.15s, background 0.15s;
 }
-.cm-input:focus { border-color: #1a73e8; box-shadow: 0 0 0 3px rgba(26,115,232,0.1); background: #fff; }
-.cm-input:disabled { background: #f1f3f4; color: #9aa0a6; cursor: not-allowed; }
+.cm-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(139,110,71,0.12); background: var(--surface); }
+.cm-input:disabled { background: var(--surface-2); color: #9aa0a6; cursor: not-allowed; }
 .cm-textarea { resize: vertical; min-height: 56px; }
 
 .cm-color-row {
@@ -144,30 +144,30 @@
   outline: none;
 }
 .cm-swatch:hover { transform: scale(1.2); box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
-.cm-swatch.active { border-color: #202124; transform: scale(1.1); box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+.cm-swatch.active { border-color: var(--text-dark); transform: scale(1.1); box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
 
 .cm-actions {
   display: flex;
   justify-content: flex-end;
   gap: 8px;
   padding-top: 8px;
-  border-top: 1px solid #f1f3f4;
+  border-top: 1px solid var(--surface-2);
   margin-top: 2px;
 }
 .cm-cancel {
   background: none;
-  border: 1.5px solid #dadce0;
+  border: 1.5px solid var(--border);
   border-radius: 10px;
   padding: 8px 20px;
   font-size: 14px;
   cursor: pointer;
-  color: #3c4043;
+  color: var(--text-dark);
   font-family: inherit;
   transition: background 0.15s, border-color 0.15s;
 }
-.cm-cancel:hover { background: #f1f3f4; border-color: #bdc1c6; }
+.cm-cancel:hover { background: var(--surface-2); border-color: #bdc1c6; }
 .cm-save {
-  background: #1a73e8;
+  background: var(--accent);
   border: none;
   border-radius: 10px;
   padding: 8px 22px;
@@ -179,5 +179,5 @@
   transition: background 0.15s, box-shadow 0.15s, transform 0.1s;
   box-shadow: 0 1px 4px rgba(26,115,232,0.3);
 }
-.cm-save:hover { background: #1557b0; box-shadow: 0 4px 12px rgba(26,115,232,0.35); transform: translateY(-1px); }
+.cm-save:hover { background: var(--accent-dark); box-shadow: 0 4px 12px rgba(26,115,232,0.35); transform: translateY(-1px); }
 .cm-save:active { transform: translateY(0); }

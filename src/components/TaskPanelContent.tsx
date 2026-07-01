@@ -14,7 +14,7 @@ interface Props {
 
 export default function TaskPanelContent({ tasks, tags, onAddTask, onToggleTask, onDeleteTask, onCreateTag }: Props) {
   const [showForm, setShowForm] = useState(false);
-  const [filter, setFilter] = useState<'all' | 'pending' | 'completed'>('all');
+  const [filter, setFilter] = useState<'all' | 'pending' | 'completed'>('pending');
 
   const today = new Date().toISOString().slice(0, 10);
   const pending = tasks.filter(t => !t.completed).length;
@@ -41,7 +41,7 @@ export default function TaskPanelContent({ tasks, tags, onAddTask, onToggleTask,
           )}
         </div>
         <div className="tpc-filters">
-          {(['all', 'pending', 'completed'] as const).map(f => (
+          {(['pending', 'completed', 'all'] as const).map(f => (
             <button
               key={f}
               className={`filter-chip ${filter === f ? 'active' : ''}`}

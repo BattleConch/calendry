@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { CalendarEvent, Task } from '../types';
 import './Sidebar.css';
 
@@ -15,6 +15,7 @@ interface Props {
 
 export default function Sidebar({ events, tasks, selectedDate, onDeleteEvent, onSelectDate, onCreateEvent, onCreateTask, onCreateNote }: Props) {
   const [createOpen, setCreateOpen] = useState(false);
+  const wrapperRef = useRef<HTMLDivElement>(null);
 
   const today = new Date();
   const todayStr = today.toISOString().slice(0, 10);
@@ -29,6 +30,18 @@ export default function Sidebar({ events, tasks, selectedDate, onDeleteEvent, on
     .sort((a, b) => ((a.date ?? '') + (a.time ?? '')).localeCompare((b.date ?? '') + (b.time ?? '')))
     .slice(0, 4);
 
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    if (!createOpen) return;
+    const handler = (e: MouseEvent) => {
+      if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) {
+        setCreateOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [createOpen]);
+
   const handleCreate = (action: () => void) => {
     action();
     setCreateOpen(false);
@@ -37,34 +50,34 @@ export default function Sidebar({ events, tasks, selectedDate, onDeleteEvent, on
   return (
     <aside className="sidebar">
       <div className="sidebar-top">
-        {/* Morphing create button */}
-        <div className="create-wrapper">
-          <div className={`create-pill ${createOpen ? 'open' : ''}`} onClick={() => !createOpen && setCreateOpen(true)}>
-            {/* Closed face */}
-            <div className="create-closed-face">
-              <span className="create-plus-icon">+</span>
-              <span className="create-label-text">Create</span>
-              <span className="create-chevron-icon">&#8964;</span>
+        {/* Create button with floating dropdown */}
+        <div className="create-wrapper" ref={wrapperRef}>
+          <button
+            className={`create-btn ${createOpen ? 'open' : ''}`}
+            onClick={() => setCreateOpen(o => !o)}
+          >
+            <span className="create-btn-icon">+</span>
+            <span className="create-btn-label">{createOpen ? 'Event' : 'Create'}</span>
+          </button>
+
+          {createOpen && (
+            <div className="create-dropdown">
+              <button className="create-drop-item event-item" onClick={() => handleCreate(onCreateEvent)}>
+                <span className="drop-item-icon">&#9711;</span>
+                <span>Event</span>
+              </button>
+              <div className="create-drop-divider" />
+              <button className="create-drop-item task-item" onClick={() => handleCreate(onCreateTask)}>
+                <span className="drop-item-icon">&#10003;</span>
+                <span>Task</span>
+              </button>
+              <div className="create-drop-divider" />
+              <button className="create-drop-item note-item" onClick={() => handleCreate(onCreateNote)}>
+                <span className="drop-item-icon">&#9998;</span>
+                <span>Note</span>
+              </button>
             </div>
-            {/* Open face */}
-            <div className="create-open-face">
-              <button className="create-opt event-opt" onClick={e => { e.stopPropagation(); handleCreate(onCreateEvent); }}>
-                <span className="opt-icon">&#9711;</span>
-                Event
-              </button>
-              <div className="create-opt-divider" />
-              <button className="create-opt task-opt" onClick={e => { e.stopPropagation(); handleCreate(onCreateTask); }}>
-                <span className="opt-icon">&#10003;</span>
-                Task
-              </button>
-              <div className="create-opt-divider" />
-              <button className="create-opt note-opt" onClick={e => { e.stopPropagation(); handleCreate(onCreateNote); }}>
-                <span className="opt-icon">&#9998;</span>
-                Note
-              </button>
-              <button className="create-close-btn" onClick={e => { e.stopPropagation(); setCreateOpen(false); }} aria-label="Close">&#10005;</button>
-            </div>
-          </div>
+          )}
         </div>
 
         {/* Upcoming tasks */}
