@@ -2,38 +2,40 @@ import React, { useState } from 'react';
 import Sidebar from './components/Sidebar';
 import CalendarGrid from './components/CalendarGrid';
 import WeekView from './components/WeekView';
-import TaskPanel from './components/TaskPanel';
-import { CalendarEvent, Task, ViewMode } from './types';
+import RightPanel from './components/RightPanel';
+import TasksPage from './components/TasksPage';
+import NotesPage from './components/NotesPage';
+import { CalendarEvent, Task, Note, ViewMode, PageTab } from './types';
 import './App.css';
 
 function App() {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [tasks, setTasks] = useState<Task[]>([]);
+  const [notes, setNotes] = useState<Note[]>([]);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [view, setView] = useState<ViewMode>('month');
-  const [taskPanelOpen, setTaskPanelOpen] = useState(true);
+  const [page, setPage] = useState<PageTab>('calendar');
+  const [rightPanelOpen, setRightPanelOpen] = useState(true);
+  const [rightTab, setRightTab] = useState<'tasks' | 'notes'>('tasks');
+  const [dotsOpen, setDotsOpen] = useState(false);
 
-  const addEvent = (event: CalendarEvent) => setEvents(prev => [...prev, event]);
+  const addEvent = (e: CalendarEvent) => setEvents(prev => [...prev, e]);
   const deleteEvent = (id: string) => setEvents(prev => prev.filter(e => e.id !== id));
-
-  const addTask = (task: Task) => setTasks(prev => [...prev, task]);
+  const addTask = (t: Task) => setTasks(prev => [...prev, t]);
   const toggleTask = (id: string) => setTasks(prev => prev.map(t => t.id === id ? { ...t, completed: !t.completed } : t));
   const deleteTask = (id: string) => setTasks(prev => prev.filter(t => t.id !== id));
+  const addNote = (n: Note) => setNotes(prev => [...prev, n]);
+  const updateNote = (id: string, content: string) => setNotes(prev => prev.map(n => n.id === id ? { ...n, content, updatedAt: new Date().toISOString() } : n));
+  const deleteNote = (id: string) => setNotes(prev => prev.filter(n => n.id !== id));
 
   const navPrev = () => {
-    if (view === 'month') {
-      setCurrentDate(d => new Date(d.getFullYear(), d.getMonth() - 1, 1));
-    } else {
-      setCurrentDate(d => { const n = new Date(d); n.setDate(n.getDate() - 7); return n; });
-    }
+    if (view === 'month') setCurrentDate(d => new Date(d.getFullYear(), d.getMonth() - 1, 1));
+    else setCurrentDate(d => { const n = new Date(d); n.setDate(n.getDate() - 7); return n; });
   };
   const navNext = () => {
-    if (view === 'month') {
-      setCurrentDate(d => new Date(d.getFullYear(), d.getMonth() + 1, 1));
-    } else {
-      setCurrentDate(d => { const n = new Date(d); n.setDate(n.getDate() + 7); return n; });
-    }
+    if (view === 'month') setCurrentDate(d => new Date(d.getFullYear(), d.getMonth() + 1, 1));
+    else setCurrentDate(d => { const n = new Date(d); n.setDate(n.getDate() + 7); return n; });
   };
 
   const headerLabel = view === 'month'
@@ -43,73 +45,126 @@ function App() {
   return (
     <div className="app">
       <header className="app-header">
+        {/* Left: logo + date nav */}
         <div className="header-left">
           <span className="app-title">Calendry</span>
+          {page === 'calendar' && (
+            <div className="date-nav">
+              <button className="arrow-btn" onClick={navPrev} aria-label="Previous">&#8249;</button>
+              <button className="arrow-btn" onClick={navNext} aria-label="Next">&#8250;</button>
+              <span className="month-year">{headerLabel}</span>
+            </div>
+          )}
         </div>
-        <div className="header-center">
-          <button className="today-btn" onClick={() => setCurrentDate(new Date())}>Today</button>
-          <button className="arrow-btn" onClick={navPrev}>&#8249;</button>
-          <button className="arrow-btn" onClick={navNext}>&#8250;</button>
-          <h2 className="month-year">{headerLabel}</h2>
-        </div>
+
+        {/* Center: page tabs */}
+        <nav className="page-tabs">
+          {(['calendar', 'tasks', 'notes'] as PageTab[]).map(tab => (
+            <button
+              key={tab}
+              className={`page-tab ${page === tab ? 'active' : ''}`}
+              onClick={() => setPage(tab)}
+            >
+              {tab.charAt(0).toUpperCase() + tab.slice(1)}
+            </button>
+          ))}
+        </nav>
+
+        {/* Right: view toggle + dots + account */}
         <div className="header-right">
-          <div className="view-toggle">
+          {page === 'calendar' && (
+            <div className="view-toggle">
+              <button className={`view-btn ${view === 'month' ? 'active' : ''}`} onClick={() => setView('month')}>Month</button>
+              <button className={`view-btn ${view === 'week' ? 'active' : ''}`} onClick={() => setView('week')}>Week</button>
+            </div>
+          )}
+
+          <div className="dots-wrapper">
             <button
-              className={`view-btn ${view === 'month' ? 'active' : ''}`}
-              onClick={() => setView('month')}
-            >Month</button>
-            <button
-              className={`view-btn ${view === 'week' ? 'active' : ''}`}
-              onClick={() => setView('week')}
-            >Week</button>
+              className="icon-btn dots-btn"
+              onClick={() => setDotsOpen(o => !o)}
+              aria-label="More options"
+            >
+              &#8942;
+            </button>
+            {dotsOpen && (
+              <>
+                <div className="dots-backdrop" onClick={() => setDotsOpen(false)} />
+                <div className="dots-menu">
+                  <div className="dots-menu-item disabled">Settings</div>
+                  <div className="dots-menu-item disabled">Appearance</div>
+                  <div className="dots-menu-item disabled">Customize</div>
+                </div>
+              </>
+            )}
           </div>
-          <button
-            className={`task-panel-toggle ${taskPanelOpen ? 'active' : ''}`}
-            onClick={() => setTaskPanelOpen(o => !o)}
-            title="Toggle task panel"
-          >
-            &#10003; Tasks
-          </button>
+
+          <button className="icon-btn account-btn" aria-label="Account">Acc</button>
         </div>
       </header>
 
       <div className="app-body">
-        <Sidebar
-          events={events}
-          tasks={tasks}
-          selectedDate={selectedDate}
-          onAddEvent={addEvent}
-          onDeleteEvent={deleteEvent}
-          onSelectDate={setSelectedDate}
-        />
+        {page === 'calendar' && (
+          <Sidebar
+            events={events}
+            tasks={tasks}
+            selectedDate={selectedDate}
+            onAddEvent={addEvent}
+            onDeleteEvent={deleteEvent}
+            onSelectDate={setSelectedDate}
+          />
+        )}
 
         <main className="main-content">
-          {view === 'month' ? (
-            <CalendarGrid
-              currentDate={currentDate}
-              events={events}
+          {page === 'calendar' ? (
+            view === 'month' ? (
+              <CalendarGrid
+                currentDate={currentDate}
+                events={events}
+                tasks={tasks}
+                selectedDate={selectedDate}
+                onSelectDate={setSelectedDate}
+              />
+            ) : (
+              <WeekView
+                currentDate={currentDate}
+                events={events}
+                tasks={tasks}
+                selectedDate={selectedDate}
+                onSelectDate={setSelectedDate}
+              />
+            )
+          ) : page === 'tasks' ? (
+            <TasksPage
               tasks={tasks}
-              selectedDate={selectedDate}
-              onSelectDate={setSelectedDate}
+              onAddTask={addTask}
+              onToggleTask={toggleTask}
+              onDeleteTask={deleteTask}
             />
           ) : (
-            <WeekView
-              currentDate={currentDate}
-              events={events}
-              tasks={tasks}
-              selectedDate={selectedDate}
-              onSelectDate={setSelectedDate}
+            <NotesPage
+              notes={notes}
+              onAddNote={addNote}
+              onUpdateNote={updateNote}
+              onDeleteNote={deleteNote}
             />
           )}
         </main>
 
-        {taskPanelOpen && (
-          <TaskPanel
+        {page === 'calendar' && (
+          <RightPanel
+            open={rightPanelOpen}
+            activeTab={rightTab}
             tasks={tasks}
+            notes={notes}
+            onTabChange={setRightTab}
+            onToggle={() => setRightPanelOpen(o => !o)}
             onAddTask={addTask}
             onToggleTask={toggleTask}
             onDeleteTask={deleteTask}
-            onClose={() => setTaskPanelOpen(false)}
+            onAddNote={addNote}
+            onUpdateNote={updateNote}
+            onDeleteNote={deleteNote}
           />
         )}
       </div>
