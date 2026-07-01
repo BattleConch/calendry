@@ -1,0 +1,205 @@
+.week-view {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: #fff;
+}
+
+/* Header */
+.week-header {
+  display: flex;
+  border-bottom: 1px solid #e0e0e0;
+  flex-shrink: 0;
+}
+.time-gutter-header {
+  width: 56px;
+  flex-shrink: 0;
+}
+.week-day-header {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px 4px;
+  cursor: pointer;
+  border-left: 1px solid #e0e0e0;
+  transition: background 0.1s;
+  user-select: none;
+}
+.week-day-header:hover { background: #f8f9fa; }
+.week-day-header.selected { background: #e8f0fe; }
+.week-day-name {
+  font-size: 11px;
+  color: #70757a;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 500;
+}
+.week-day-header.today .week-day-name { color: #1a73e8; }
+.week-day-number {
+  font-size: 22px;
+  font-weight: 400;
+  color: #3c4043;
+  margin-top: 2px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+.week-day-number.today-circle {
+  background: #1a73e8;
+  color: #fff;
+  font-weight: 500;
+}
+
+/* All-day row */
+.week-allday-row {
+  display: flex;
+  border-bottom: 1px solid #e0e0e0;
+  min-height: 28px;
+  flex-shrink: 0;
+}
+.time-gutter-allday {
+  width: 56px;
+  flex-shrink: 0;
+  font-size: 10px;
+  color: #70757a;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 8px;
+  padding-top: 4px;
+}
+.week-allday-cell {
+  flex: 1;
+  border-left: 1px solid #e0e0e0;
+  padding: 3px 2px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.week-task-chip {
+  font-size: 11px;
+  color: #1a73e8;
+  background: #e8f0fe;
+  border-radius: 3px;
+  padding: 1px 5px;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  white-space: nowrap;
+  overflow: hidden;
+  cursor: pointer;
+}
+.week-task-chip:hover { background: #d2e3fc; }
+.week-task-chip.completed { text-decoration: line-through; color: #80868b; background: #f1f3f4; }
+.week-task-icon { font-size: 10px; flex-shrink: 0; }
+
+/* Scrollable grid */
+.week-scroll {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.week-grid {
+  display: flex;
+  position: relative;
+}
+
+/* Time gutter */
+.time-gutter {
+  width: 56px;
+  flex-shrink: 0;
+  position: relative;
+}
+.hour-label {
+  position: absolute;
+  right: 8px;
+  font-size: 10px;
+  color: #70757a;
+  transform: translateY(-50%);
+  white-space: nowrap;
+  pointer-events: none;
+  height: 20px;
+  display: flex;
+  align-items: center;
+}
+
+/* Day columns */
+.week-col {
+  flex: 1;
+  border-left: 1px solid #e0e0e0;
+  position: relative;
+}
+.week-col.today-col { background: #fafbff; }
+
+.hour-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  border-top: 1px solid #f1f3f4;
+  pointer-events: none;
+}
+
+/* Current time */
+.now-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  border-top: 2px solid #ea4335;
+  pointer-events: none;
+  z-index: 2;
+}
+.now-dot {
+  position: absolute;
+  left: -4px;
+  top: -4px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ea4335;
+}
+
+/* Events in week view */
+.week-event {
+  position: absolute;
+  left: 2px;
+  right: 2px;
+  border-radius: 4px;
+  padding: 2px 6px;
+  color: #fff;
+  font-size: 11px;
+  overflow: hidden;
+  cursor: pointer;
+  z-index: 1;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+  transition: filter 0.15s;
+}
+.week-event:hover { filter: brightness(0.9); }
+.week-event-title { font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.week-event-time { font-size: 10px; opacity: 0.9; }
+
+/* Timed tasks in week view */
+.week-task-timed {
+  position: absolute;
+  left: 2px;
+  right: 2px;
+  border-radius: 3px;
+  padding: 2px 5px;
+  font-size: 11px;
+  color: #1a73e8;
+  background: #e8f0fe;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  overflow: hidden;
+  white-space: nowrap;
+  cursor: pointer;
+  z-index: 1;
+}
+.week-task-timed:hover { background: #d2e3fc; }
+.week-task-timed.completed { text-decoration: line-through; color: #80868b; background: #f1f3f4; }

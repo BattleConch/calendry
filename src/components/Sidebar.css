@@ -26,21 +26,13 @@
   transition: box-shadow 0.2s, background 0.15s;
   width: 100%;
   justify-content: flex-start;
+  font-family: inherit;
 }
-.create-btn:hover {
-  background: #f8f9fa;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-}
-.create-icon {
-  font-size: 22px;
-  color: #4285F4;
-  font-weight: 300;
-}
+.create-btn:hover { background: #f8f9fa; box-shadow: 0 2px 6px rgba(0,0,0,0.2); }
+.create-icon { font-size: 22px; color: #4285F4; font-weight: 300; }
 
 /* Mini Calendar */
-.mini-calendar {
-  padding: 4px 0;
-}
+.mini-calendar { padding: 4px 0; }
 .mini-cal-header {
   display: flex;
   align-items: center;
@@ -68,12 +60,7 @@
   gap: 2px;
   text-align: center;
 }
-.mini-day-name {
-  font-size: 11px;
-  color: #70757a;
-  padding: 4px 0;
-  font-weight: 500;
-}
+.mini-day-name { font-size: 11px; color: #70757a; padding: 4px 0; font-weight: 500; }
 .mini-day {
   background: none;
   border: none;
@@ -105,28 +92,25 @@
 .mini-day.selected .mini-dot { background: #fff; }
 
 /* Upcoming */
-.upcoming-section { flex: 1; }
+.upcoming-section { }
 .upcoming-title {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
   color: #5f6368;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-bottom: 8px;
+  letter-spacing: 0.6px;
+  margin-bottom: 6px;
 }
-.no-events {
-  font-size: 13px;
-  color: #9aa0a6;
-}
+.no-events { font-size: 13px; color: #9aa0a6; }
+
 .upcoming-event {
   display: flex;
   flex-direction: column;
-  padding: 8px 8px 8px 10px;
+  padding: 7px 8px 7px 10px;
   border-radius: 4px;
   margin-bottom: 4px;
   background: #f8f9fa;
   position: relative;
-  cursor: default;
 }
 .upcoming-event-title {
   font-size: 13px;
@@ -137,11 +121,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.upcoming-event-time {
-  font-size: 11px;
-  color: #5f6368;
-  margin-top: 2px;
-}
+.upcoming-event-time { font-size: 11px; color: #5f6368; margin-top: 2px; }
 .delete-btn {
   position: absolute;
   top: 4px;
@@ -155,6 +135,31 @@
   line-height: 1;
 }
 .delete-btn:hover { color: #d93025; }
+
+/* Upcoming tasks */
+.upcoming-task {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 4px;
+  border-radius: 4px;
+}
+.task-dot {
+  width: 8px;
+  height: 8px;
+  border: 2px solid #1a73e8;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.upcoming-task-title {
+  font-size: 13px;
+  color: #202124;
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.upcoming-task-date { font-size: 11px; color: #70757a; flex-shrink: 0; }
 
 /* Modal */
 .modal-overlay {
