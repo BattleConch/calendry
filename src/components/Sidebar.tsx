@@ -54,18 +54,17 @@ export default function Sidebar({ events, tasks, selectedDate, onDeleteEvent, on
         <div className="create-wrapper" ref={wrapperRef}>
           <button
             className={`create-btn ${createOpen ? 'open' : ''}`}
-            onClick={() => setCreateOpen(o => !o)}
+            onClick={() => createOpen ? handleCreate(onCreateEvent) : setCreateOpen(true)}
           >
-            <span className="create-btn-icon">+</span>
+            <span className="create-btn-icon-wrap">
+              <span className={`create-icon-plus ${createOpen ? 'hidden' : ''}`}>+</span>
+              <span className={`create-icon-chevron ${createOpen ? '' : 'hidden'}`}>&#8964;</span>
+            </span>
             <span className="create-btn-label">{createOpen ? 'Event' : 'Create'}</span>
           </button>
 
           {createOpen && (
             <div className="create-dropdown">
-              <button className="create-drop-item event-item" onClick={() => handleCreate(onCreateEvent)}>
-                <span className="drop-item-icon">&#9711;</span>
-                <span>Event</span>
-              </button>
               <div className="create-drop-divider" />
               <button className="create-drop-item task-item" onClick={() => handleCreate(onCreateTask)}>
                 <span className="drop-item-icon">&#10003;</span>
@@ -140,6 +139,9 @@ interface MiniCalendarProps {
 
 function MiniCalendar({ date, selectedDate, events, tasks, onSelectDate }: MiniCalendarProps) {
   const [viewDate, setViewDate] = useState(new Date(date.getFullYear(), date.getMonth(), 1));
+  const [animKey, setAnimKey] = useState(0);
+  const [animDir, setAnimDir] = useState<'left' | 'right'>('left');
+
   const year = viewDate.getFullYear();
   const month = viewDate.getMonth();
   const firstDay = new Date(year, month, 1).getDay();
@@ -149,30 +151,39 @@ function MiniCalendar({ date, selectedDate, events, tasks, onSelectDate }: MiniC
   const marked = new Set([...events.map(e => e.date), ...tasks.filter(t => t.date).map(t => t.date as string)]);
   const cells: (number | null)[] = Array(firstDay).fill(null);
   for (let d = 1; d <= daysInMonth; d++) cells.push(d);
+  while (cells.length < 42) cells.push(null);
+
+  const navigate = (dir: 'prev' | 'next') => {
+    setAnimDir(dir === 'next' ? 'left' : 'right');
+    setAnimKey(k => k + 1);
+    setViewDate(new Date(year, dir === 'next' ? month + 1 : month - 1, 1));
+  };
 
   return (
     <div className="mini-calendar">
       <div className="mini-cal-header">
-        <button onClick={() => setViewDate(new Date(year, month - 1, 1))}>&#8249;</button>
+        <button onClick={() => navigate('prev')}>&#8249;</button>
         <span>{viewDate.toLocaleString('default', { month: 'long', year: 'numeric' })}</span>
-        <button onClick={() => setViewDate(new Date(year, month + 1, 1))}>&#8250;</button>
+        <button onClick={() => navigate('next')}>&#8250;</button>
       </div>
-      <div className="mini-cal-grid">
-        {['S','M','T','W','T','F','S'].map((d, i) => <span key={i} className="mini-day-name">{d}</span>)}
-        {cells.map((day, i) => {
-          if (!day) return <span key={i} />;
-          const ds = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
-          return (
-            <button
-              key={i}
-              className={`mini-day ${ds === today ? 'today' : ''} ${ds === selectedDate ? 'selected' : ''}`}
-              onClick={() => onSelectDate(ds === selectedDate ? null : ds)}
-            >
-              {day}
-              {marked.has(ds) && <span className="mini-dot" />}
-            </button>
-          );
-        })}
+      <div className="mini-cal-grid-outer">
+        <div key={animKey} className={`mini-cal-grid mini-anim-${animDir}`}>
+          {['S','M','T','W','T','F','S'].map((d, i) => <span key={i} className="mini-day-name">{d}</span>)}
+          {cells.map((day, i) => {
+            if (!day) return <span key={i} />;
+            const ds = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+            return (
+              <button
+                key={i}
+                className={`mini-day ${ds === today ? 'today' : ''} ${ds === selectedDate ? 'selected' : ''}`}
+                onClick={() => onSelectDate(ds === selectedDate ? null : ds)}
+              >
+                {day}
+                {marked.has(ds) && <span className="mini-dot" />}
+              </button>
+            );
+          })}
+        </div>
       </div>
     </div>
   );

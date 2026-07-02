@@ -19,26 +19,33 @@
 .panel-toggle-btn {
   position: absolute;
   left: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 20px;
-  height: 48px;
+  top: 80px;
+  width: 24px;
+  height: 52px;
   background: var(--surface);
-  border: 1px solid #e0e0e0;
-  border-radius: 0 10px 10px 0;
+  border: 1.5px solid var(--border);
+  border-left: none;
+  border-radius: 0 12px 12px 0;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 14px;
+  font-size: 16px;
   color: var(--text-muted);
   z-index: 2;
-  transition: background 0.15s, color 0.15s;
-  box-shadow: 2px 0 6px rgba(0,0,0,0.06);
+  transition: background 0.15s, color 0.15s, box-shadow 0.15s;
+  box-shadow: 2px 0 8px rgba(61,43,31,0.09);
   padding: 0;
   line-height: 1;
 }
-.panel-toggle-btn:hover { background: var(--surface-2); color: var(--accent); }
+.panel-toggle-btn:hover { background: var(--accent-light); color: var(--accent); box-shadow: 2px 0 12px rgba(61,43,31,0.14); }
+
+.panel-toggle-btn .toggle-arrow {
+  display: inline-block;
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.right-panel.open .toggle-arrow { transform: rotate(0deg); }
+.right-panel.collapsed .toggle-arrow { transform: rotate(180deg); }
 
 /* Inner content (only shown when open) */
 .panel-inner {

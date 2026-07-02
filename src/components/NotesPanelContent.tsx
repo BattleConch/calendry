@@ -39,17 +39,21 @@ export default function NotesPanelContent({ notes, tags, onAddNote, onUpdateNote
         {sorted.length === 0 && !showForm && (
           <p className="no-notes">No notes yet</p>
         )}
-        {sorted.map(note => (
-          <NoteCard
-            key={note.id}
-            note={note}
-            editing={editingId === note.id}
-            onEdit={() => setEditingId(note.id)}
-            onSave={content => { onUpdateNote(note.id, content); setEditingId(null); }}
-            onCancel={() => setEditingId(null)}
-            onDelete={() => onDeleteNote(note.id)}
-          />
-        ))}
+        {sorted.map(note => {
+          const tag = tags.find(tg => tg.id === note.tagId);
+          return (
+            <NoteCard
+              key={note.id}
+              note={note}
+              tagColor={tag?.color}
+              editing={editingId === note.id}
+              onEdit={() => setEditingId(note.id)}
+              onSave={content => { onUpdateNote(note.id, content); setEditingId(null); }}
+              onCancel={() => setEditingId(null)}
+              onDelete={() => onDeleteNote(note.id)}
+            />
+          );
+        })}
       </div>
     </div>
   );
@@ -85,8 +89,8 @@ function NoteForm({ tags, onCreateTag, onSubmit, onCancel }: { tags: Tag[]; onCr
   );
 }
 
-function NoteCard({ note, editing, onEdit, onSave, onCancel, onDelete }: {
-  note: Note; editing: boolean;
+function NoteCard({ note, tagColor, editing, onEdit, onSave, onCancel, onDelete }: {
+  note: Note; tagColor?: string; editing: boolean;
   onEdit: () => void; onSave: (c: string) => void; onCancel: () => void; onDelete: () => void;
 }) {
   const [content, setContent] = useState(note.content);
@@ -106,7 +110,7 @@ function NoteCard({ note, editing, onEdit, onSave, onCancel, onDelete }: {
   }
 
   return (
-    <div className="note-card" onClick={onEdit}>
+    <div className="note-card" onClick={onEdit} style={tagColor ? { borderLeft: `3px solid ${tagColor}` } : undefined}>
       <div className="note-card-header">
         <span className="note-card-title">{note.title}</span>
         <button className="note-delete" onClick={e => { e.stopPropagation(); onDelete(); }}>&#10005;</button>

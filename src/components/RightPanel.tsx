@@ -34,7 +34,7 @@ export default function RightPanel(props: Props) {
         aria-label={open ? 'Collapse panel' : 'Expand panel'}
         title={open ? 'Collapse' : 'Expand'}
       >
-        {open ? '›' : '‹'}
+        <span className="toggle-arrow">›</span>
       </button>
 
       {open && (

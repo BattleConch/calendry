@@ -78,17 +78,21 @@ export default function CalendarGrid({ currentDate, events, tasks, tags, selecte
                     <span className="event-chip-title">{event.title}</span>
                   </div>
                 ))}
-                {dayTasks.slice(0, Math.max(0, maxVisible - dayEvents.length)).map(task => (
-                  <div
-                    key={task.id}
-                    className={`task-chip ${task.completed ? 'completed' : ''}`}
-                    title={task.title}
-                    onClick={e => e.stopPropagation()}
-                  >
-                    <span className="task-chip-icon">&#10003;</span>
-                    <span className="task-chip-title">{task.title}</span>
-                  </div>
-                ))}
+                {dayTasks.slice(0, Math.max(0, maxVisible - dayEvents.length)).map(task => {
+                  const tag = tags.find(tg => tg.id === task.tagId);
+                  return (
+                    <div
+                      key={task.id}
+                      className={`task-chip ${task.completed ? 'completed' : ''}`}
+                      title={task.title}
+                      style={tag && !task.completed ? { borderColor: tag.color, background: tag.color + '18' } : undefined}
+                      onClick={e => e.stopPropagation()}
+                    >
+                      <span className="task-chip-icon">&#10003;</span>
+                      <span className="task-chip-title">{task.title}</span>
+                    </div>
+                  );
+                })}
                 {overflow > 0 && <div className="more-events">+{overflow} more</div>}
               </div>
             </div>

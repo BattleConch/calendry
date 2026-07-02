@@ -76,7 +76,8 @@ function App() {
           )}
         </div>
 
-        <nav className="page-tabs">
+        <nav className="page-tabs" style={{ '--ti': ['calendar','tasks','notes'].indexOf(page) } as React.CSSProperties}>
+          <span className="tab-pill" />
           {(['calendar', 'tasks', 'notes'] as PageTab[]).map(tab => (
             <button key={tab} className={`page-tab ${page === tab ? 'active' : ''}`} onClick={() => setPage(tab)}>
               {tab.charAt(0).toUpperCase() + tab.slice(1)}
@@ -97,7 +98,9 @@ function App() {
                 <option value="week">Week</option>
                 <option value="day">Day</option>
               </select>
-              <span className="view-select-arrow">&#8964;</span>
+              <span className="view-select-arrow">
+                <svg viewBox="0 0 10 6"><polyline points="1,1 5,5 9,1"/></svg>
+              </span>
             </div>
           )}
           <div className="dots-wrapper">
@@ -202,6 +205,7 @@ function App() {
           onCreateTag={addTag}
           onAddEvent={addEvent}
           onUpdateEvent={updateEvent}
+          onDeleteEvent={deleteEvent}
           onAddTask={addTask}
           onAddNote={addNote}
           onClose={() => setCreating(null)}

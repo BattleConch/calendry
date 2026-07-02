@@ -19,12 +19,13 @@ interface Props {
   onCreateTag: (tag: Tag) => void;
   onAddEvent: (e: CalendarEvent) => void;
   onUpdateEvent?: (e: CalendarEvent) => void;
+  onDeleteEvent?: (id: string) => void;
   onAddTask: (t: Task) => void;
   onAddNote: (n: Note) => void;
   onClose: () => void;
 }
 
-export default function CreateModal({ config, tags, onCreateTag, onAddEvent, onUpdateEvent, onAddTask, onAddNote, onClose }: Props) {
+export default function CreateModal({ config, tags, onCreateTag, onAddEvent, onUpdateEvent, onDeleteEvent, onAddTask, onAddNote, onClose }: Props) {
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal" onClick={e => e.stopPropagation()}>
@@ -34,6 +35,7 @@ export default function CreateModal({ config, tags, onCreateTag, onAddEvent, onU
             tags={tags}
             onCreateTag={onCreateTag}
             onSubmit={e => { config.editEvent && onUpdateEvent ? onUpdateEvent(e) : onAddEvent(e); onClose(); }}
+            onDelete={config.editEvent && onDeleteEvent ? () => { onDeleteEvent(config.editEvent!.id); onClose(); } : undefined}
             onClose={onClose}
           />
         )}
@@ -60,11 +62,12 @@ export default function CreateModal({ config, tags, onCreateTag, onAddEvent, onU
 }
 
 /* ── Event Form ── */
-function EventForm({ prefill, tags, onCreateTag, onSubmit, onClose }: {
+function EventForm({ prefill, tags, onCreateTag, onSubmit, onDelete, onClose }: {
   prefill: CreateConfig;
   tags: Tag[];
   onCreateTag: (t: Tag) => void;
   onSubmit: (e: CalendarEvent) => void;
+  onDelete?: () => void;
   onClose: () => void;
 }) {
   const isEditing = !!prefill.editEvent;
@@ -119,6 +122,9 @@ function EventForm({ prefill, tags, onCreateTag, onSubmit, onClose }: {
         </div>
       </div>
       <div className="cm-actions">
+        {onDelete && (
+          <button type="button" className="cm-delete" onClick={onDelete}>Delete event</button>
+        )}
         <button type="button" className="cm-cancel" onClick={onClose}>Cancel</button>
         <button type="submit" className="cm-save">{isEditing ? 'Update event' : 'Save event'}</button>
       </div>

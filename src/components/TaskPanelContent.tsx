@@ -75,6 +75,7 @@ export default function TaskPanelContent({ tasks, tags, onAddTask, onToggleTask,
             key={task.id}
             task={task}
             today={today}
+            tag={tags.find(tg => tg.id === task.tagId)}
             onToggle={() => onToggleTask(task.id)}
             onDelete={() => onDeleteTask(task.id)}
           />
@@ -84,11 +85,18 @@ export default function TaskPanelContent({ tasks, tags, onAddTask, onToggleTask,
   );
 }
 
-function TaskItem({ task, today, onToggle, onDelete }: { task: Task; today: string; onToggle: () => void; onDelete: () => void }) {
+function TaskItem({ task, today, tag, onToggle, onDelete }: { task: Task; today: string; tag?: Tag; onToggle: () => void; onDelete: () => void }) {
   const isOverdue = !task.completed && task.date && task.date < today;
   return (
-    <div className={`task-item ${task.completed ? 'completed' : ''} ${isOverdue ? 'overdue' : ''}`}>
-      <button className={`task-check ${task.completed ? 'checked' : ''}`} onClick={onToggle}>
+    <div
+      className={`task-item ${task.completed ? 'completed' : ''} ${isOverdue ? 'overdue' : ''}`}
+      style={tag && !task.completed ? { borderLeft: `3px solid ${tag.color}`, paddingLeft: '9px' } : undefined}
+    >
+      <button
+        className={`task-check ${task.completed ? 'checked' : ''}`}
+        onClick={onToggle}
+        style={tag && !task.completed ? { borderColor: tag.color } : undefined}
+      >
         {task.completed && <span>&#10003;</span>}
       </button>
       <div className="task-item-body">
