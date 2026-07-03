@@ -19,26 +19,26 @@
 .panel-toggle-btn {
   position: absolute;
   left: 0;
-  top: 80px;
-  width: 24px;
-  height: 52px;
+  top: 72px;
+  width: 22px;
+  height: 60px;
   background: var(--surface);
   border: 1.5px solid var(--border);
   border-left: none;
-  border-radius: 0 12px 12px 0;
+  border-radius: 0 14px 14px 0;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 16px;
+  font-size: 18px;
   color: var(--text-muted);
   z-index: 2;
   transition: background 0.15s, color 0.15s, box-shadow 0.15s;
-  box-shadow: 2px 0 8px rgba(61,43,31,0.09);
+  box-shadow: 3px 0 10px rgba(61,43,31,0.10);
   padding: 0;
   line-height: 1;
 }
-.panel-toggle-btn:hover { background: var(--accent-light); color: var(--accent); box-shadow: 2px 0 12px rgba(61,43,31,0.14); }
+.panel-toggle-btn:hover { background: var(--accent-light); color: var(--accent); box-shadow: 3px 0 14px rgba(61,43,31,0.16); }
 
 .panel-toggle-btn .toggle-arrow {
   display: inline-block;

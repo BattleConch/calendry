@@ -101,8 +101,20 @@
 /* Scrollable grid */
 .week-scroll {
   flex: 1;
-  overflow-y: auto;
+  overflow-y: scroll; /* always-visible scrollbar prevents column-width jitter vs header */
   overflow-x: hidden;
+  scrollbar-gutter: stable;
+}
+.week-scroll::-webkit-scrollbar { width: 6px; }
+.week-scroll::-webkit-scrollbar-track { background: transparent; }
+.week-scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+/* Reserve matching space in header/allday rows so columns stay aligned */
+.week-header::after,
+.week-allday-row::after {
+  content: '';
+  width: 6px;
+  flex-shrink: 0;
 }
 
 .week-grid {
@@ -217,18 +229,25 @@
   padding: 4px 2px;
 }
 .corner-today-btn {
-  background: none;
-  border: 1px solid #dadce0;
-  border-radius: 8px;
-  padding: 3px 6px;
-  font-size: 10px;
-  color: var(--text-dark);
+  background: var(--surface);
+  border: 1.5px solid var(--accent-2);
+  border-radius: 10px;
+  padding: 7px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--accent);
   cursor: pointer;
   font-family: inherit;
-  transition: background 0.15s, border-color 0.15s;
+  letter-spacing: 0.2px;
+  box-shadow: 0 1px 4px rgba(139,110,71,0.14);
+  transition: background 0.15s, box-shadow 0.15s, transform 0.1s;
   white-space: nowrap;
 }
-.corner-today-btn:hover { background: var(--surface-hover); border-color: #bdc1c6; }
+.corner-today-btn:hover {
+  background: var(--accent-light);
+  box-shadow: 0 2px 8px rgba(139,110,71,0.2);
+  transform: translateY(-1px);
+}
 
 /* Drag ghost */
 .drag-ghost {

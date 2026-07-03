@@ -272,6 +272,27 @@
 .mini-day:hover { background: var(--accent-light); }
 .mini-day.today { color: var(--accent); font-weight: 700; }
 .mini-day.selected { background: var(--accent) !important; color: #fff !important; }
+
+/* Week/day highlight range */
+.mini-day.hl {
+  background: rgba(139,110,71,0.12);
+  border-radius: 0;
+  color: var(--text-dark);
+}
+.mini-day.hl-start {
+  border-radius: 50% 0 0 50%;
+  background: rgba(139,110,71,0.14);
+}
+.mini-day.hl-end {
+  border-radius: 0 50% 50% 0;
+  background: rgba(139,110,71,0.14);
+}
+/* day view: single highlighted day is a full pill */
+.mini-day.hl-start.hl-end { border-radius: 50%; }
+
+.mini-day.hl.today { color: var(--accent); }
+.mini-day.hl:hover { background: rgba(139,110,71,0.22); }
+
 .mini-dot {
   width: 4px; height: 4px;
   border-radius: 50%;

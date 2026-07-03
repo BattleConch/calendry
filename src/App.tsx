@@ -30,6 +30,7 @@ function App() {
   const [rightTab, setRightTab] = useState<'tasks' | 'notes'>('tasks');
   const [dotsOpen, setDotsOpen] = useState(false);
   const [creating, setCreating] = useState<CreateConfig | null>(null);
+  const [navAnim, setNavAnim] = useState<'left' | 'right' | null>(null);
 
   const addEvent    = (e: CalendarEvent) => setEvents(prev => [...prev, e]);
   const updateEvent = (e: CalendarEvent) => setEvents(prev => prev.map(ev => ev.id === e.id ? e : ev));
@@ -45,16 +46,21 @@ function App() {
 
   const goToday = () => setCurrentDate(new Date());
 
-  const navPrev = () => {
-    if (view === 'month') setCurrentDate(d => new Date(d.getFullYear(), d.getMonth() - 1, 1));
-    else if (view === 'week') setCurrentDate(d => { const n = new Date(d); n.setDate(n.getDate() - 7); return n; });
-    else setCurrentDate(d => { const n = new Date(d); n.setDate(n.getDate() - 1); return n; });
+  const navigate = (dir: 'prev' | 'next') => {
+    setNavAnim(dir === 'next' ? 'left' : 'right');
+    setTimeout(() => setNavAnim(null), 320);
+    if (dir === 'prev') {
+      if (view === 'month') setCurrentDate(d => new Date(d.getFullYear(), d.getMonth() - 1, 1));
+      else if (view === 'week') setCurrentDate(d => { const n = new Date(d); n.setDate(n.getDate() - 7); return n; });
+      else setCurrentDate(d => { const n = new Date(d); n.setDate(n.getDate() - 1); return n; });
+    } else {
+      if (view === 'month') setCurrentDate(d => new Date(d.getFullYear(), d.getMonth() + 1, 1));
+      else if (view === 'week') setCurrentDate(d => { const n = new Date(d); n.setDate(n.getDate() + 7); return n; });
+      else setCurrentDate(d => { const n = new Date(d); n.setDate(n.getDate() + 1); return n; });
+    }
   };
-  const navNext = () => {
-    if (view === 'month') setCurrentDate(d => new Date(d.getFullYear(), d.getMonth() + 1, 1));
-    else if (view === 'week') setCurrentDate(d => { const n = new Date(d); n.setDate(n.getDate() + 7); return n; });
-    else setCurrentDate(d => { const n = new Date(d); n.setDate(n.getDate() + 1); return n; });
-  };
+  const navPrev = () => navigate('prev');
+  const navNext = () => navigate('next');
 
   const headerLabel = view === 'month'
     ? currentDate.toLocaleString('default', { month: 'long', year: 'numeric' })
@@ -76,7 +82,7 @@ function App() {
           )}
         </div>
 
-        <nav className="page-tabs" style={{ '--ti': ['calendar','tasks','notes'].indexOf(page) } as React.CSSProperties}>
+        <nav className="page-tabs" data-ti={['calendar','tasks','notes'].indexOf(page)}>
           <span className="tab-pill" />
           {(['calendar', 'tasks', 'notes'] as PageTab[]).map(tab => (
             <button key={tab} className={`page-tab ${page === tab ? 'active' : ''}`} onClick={() => setPage(tab)}>
@@ -126,6 +132,8 @@ function App() {
             events={events}
             tasks={tasks}
             selectedDate={selectedDate}
+            currentDate={currentDate}
+            view={view}
             onDeleteEvent={deleteEvent}
             onSelectDate={setSelectedDate}
             onCreateEvent={() => setCreating({ type: 'event', date: selectedDate ?? undefined })}
@@ -134,7 +142,7 @@ function App() {
           />
         )}
 
-        <main className="main-content">
+        <main className={`main-content${navAnim ? ` nav-anim-${navAnim}` : ''}`}>
           {page === 'calendar' ? (
             view === 'month' ? (
               <CalendarGrid

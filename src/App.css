@@ -93,7 +93,6 @@ body {
   position: absolute;
   top: 3px;
   bottom: 3px;
-  left: 3px;
   width: calc((100% - 6px) / 3);
   background: var(--surface);
   border-radius: 16px;
@@ -101,9 +100,11 @@ body {
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   pointer-events: none;
-  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  transform: translateX(calc(var(--ti, 0) * 100%));
+  transition: left 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  left: 3px;
 }
+.page-tabs[data-ti="1"] .tab-pill { left: calc(3px + (100% - 6px) / 3); }
+.page-tabs[data-ti="2"] .tab-pill { left: calc(3px + (100% - 6px) * 2 / 3); }
 
 .page-tab {
   position: relative;
@@ -268,3 +269,14 @@ body {
   border-radius: 16px;
   box-shadow: 0 2px 8px rgba(61,43,31,0.08), 0 0 0 1px rgba(61,43,31,0.04);
 }
+
+@keyframes nav-slide-left {
+  from { opacity: 0.3; transform: translateX(28px); }
+  to   { opacity: 1;   transform: translateX(0); }
+}
+@keyframes nav-slide-right {
+  from { opacity: 0.3; transform: translateX(-28px); }
+  to   { opacity: 1;   transform: translateX(0); }
+}
+.main-content.nav-anim-left  { animation: nav-slide-left  0.28s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
+.main-content.nav-anim-right { animation: nav-slide-right 0.28s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
